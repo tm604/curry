@@ -16,10 +16,7 @@ our $_curry = sub {
 sub AUTOLOAD {
   my $invocant = shift;
   my ($method) = our $AUTOLOAD =~ /^curry::(.+)$/;
-  my @args = @_;
-  return sub {
-    $invocant->$method(@args => @_);
-  }
+  $invocant->$_curry($method => @_);
 }
 
 package curry::weak;
@@ -44,11 +41,7 @@ sub AUTOLOAD {
   my $invocant = shift;
   Scalar::Util::weaken($invocant) if Scalar::Util::blessed($invocant);
   my ($method) = our $AUTOLOAD =~ /^curry::weak::(.+)$/;
-  my @args = @_;
-  return sub {
-    return unless $invocant;
-    $invocant->$method(@args => @_);
-  }
+  $invocant->$_curry_weak($method => @_);
 }
 
 1;
