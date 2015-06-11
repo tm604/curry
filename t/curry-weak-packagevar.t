@@ -3,7 +3,7 @@ use warnings;
 
 use Test::More;
 use Scalar::Util qw(weaken);
-use curry::weak qw($_curry_weak);
+use curry::weak;
 
 sub dispose_ok($;$) {
 	weaken(my $copy = $_[0]);
@@ -21,12 +21,12 @@ sub dispose_ok($;$) {
 	my $foo = Foo->new;
 
 	my $called;
-	my $code = $foo->$_curry_weak(sub {
-		ok(shift->isa('Foo'), '$_curry_weak object is correct class');
-		ok(!@_, '$_curry_weak did not pick up any stray parameters on the way in');
+	my $code = $foo->$curry::weak::curry_weak(sub {
+		ok(shift->isa('Foo'), '$curry::weak::curry_weak object is correct class');
+		ok(!@_, '$curry::weak::curry_weak did not pick up any stray parameters on the way in');
 		++$called;
 	});
-	fail('$_curry did not give us a coderef') unless ref($code) eq 'CODE';
+	fail('$curry::weak::curry did not give us a coderef') unless ref($code) eq 'CODE';
 	$code->();
 	ok($called, 'curried code was called');
 	dispose_ok($foo, '$foo departs without a fight');
@@ -39,12 +39,12 @@ sub dispose_ok($;$) {
 	my $foo = Foo->new;
 
 	my $called;
-	my $code = $foo->$_curry_weak(sub {
-		ok(shift->isa('Foo'), '$_curry_weak object is correct class');
+	my $code = $foo->$curry::weak::curry_weak(sub {
+		ok(shift->isa('Foo'), '$curry::weak::curry_weak object is correct class');
 		is_deeply(\@_, [qw(stashed parameters one two three)], 'args passed as expected');
 		++$called;
 	}, qw(stashed parameters));
-	fail('$_curry did not give us a coderef') unless ref($code) eq 'CODE';
+	fail('$curry::weak::curry did not give us a coderef') unless ref($code) eq 'CODE';
 	$code->(qw(one two three));
 	ok($called, 'curried code was called');
 	dispose_ok($foo, '$foo departs without a fight');
