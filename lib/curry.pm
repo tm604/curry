@@ -9,6 +9,8 @@ our $curry = sub {
   sub { $invocant->$code(@args => @_) }
 };
 
+our $weak = $curry::weak::curry_weak;
+
 sub AUTOLOAD {
   my $invocant = shift;
   my ($method) = our $AUTOLOAD =~ /^curry::(.+)$/;
@@ -69,11 +71,11 @@ is equivalent to:
   };
 
 If you want to pass a weakened copy of an object to a coderef, use the 
-C< $curry_weak > package variable:
+C< $weak > package variable:
 
  use curry::weak;
 
- my $code = $self->$curry::weak::curry_weak(sub {
+ my $code = $self->$curry::weak(sub {
   my ($self, @args) = @_;
   print "$self must still be alive, because we were called (with @args)\n";
  }, 'xyz');
@@ -91,6 +93,8 @@ which is much the same as:
    $sub->($weak_obj, 'xyz', @_);
   }
  };
+
+C< $curry::weak > is actually a copy of C< $curry::weak::curry_weak >.
 
 There's an equivalent - but somewhat less useful - C< $curry > package variable:
 
