@@ -3,7 +3,7 @@ use warnings;
 
 use Test::More tests => 18;
 use Scalar::Util qw(weaken);
-use curry qw($_curry);
+use curry;
 
 sub dispose_ok($;$) {
 	weaken(my $copy = $_[0]);
@@ -21,12 +21,12 @@ sub dispose_ok($;$) {
 	my $foo = Foo->new;
 
 	my $called;
-	my $code = $foo->$_curry(sub {
-		ok(shift->isa('Foo'), '$_curry object is correct class');
-		ok(!@_, '$_curry did not pick up any stray parameters');
+	my $code = $foo->$curry::curry(sub {
+		ok(shift->isa('Foo'), '$curry::curry object is correct class');
+		ok(!@_, '$curry::curry did not pick up any stray parameters');
 		++$called;
 	});
-	fail('$_curry did not give us a coderef') unless ref($code) eq 'CODE';
+	fail('$curry::curry did not give us a coderef') unless ref($code) eq 'CODE';
 	$code->();
 	ok($called, 'curried code was called');
 	undef $foo;
@@ -39,12 +39,12 @@ sub dispose_ok($;$) {
 	my $foo = Foo->new;
 
 	my $called;
-	my $code = $foo->$_curry(sub {
-		ok(shift->isa('Foo'), '$_curry object is correct class');
+	my $code = $foo->$curry::curry(sub {
+		ok(shift->isa('Foo'), '$curry::curry object is correct class');
 		is_deeply(\@_, [qw(one two three)], 'curried code had the expected parameters');
 		++$called;
 	});
-	fail('$_curry did not give us a coderef') unless ref($code) eq 'CODE';
+	fail('$curry::curry did not give us a coderef') unless ref($code) eq 'CODE';
 	$code->(qw(one two three));
 	ok($called, 'curried code was called');
 	undef $foo;
@@ -57,12 +57,12 @@ sub dispose_ok($;$) {
 	my $foo = Foo->new;
 
 	my $called;
-	my $code = $foo->$_curry(sub {
-		ok(shift->isa('Foo'), '$_curry object is correct class');
+	my $code = $foo->$curry::curry(sub {
+		ok(shift->isa('Foo'), '$curry::curry object is correct class');
 		is_deeply(\@_, [qw(stashed parameters one two three)], 'curried code had the expected parameters');
 		++$called;
 	}, qw(stashed parameters));
-	fail('$_curry did not give us a coderef') unless ref($code) eq 'CODE';
+	fail('$curry::curry did not give us a coderef') unless ref($code) eq 'CODE';
 	$code->(qw(one two three));
 	ok($called, 'curried code was called');
 	undef $foo;
